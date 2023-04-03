@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             email: req.query?.email,
           },
         });
-        res.status(200).json({
+        return res.status(200).json({
           status: 'success',
           message: 'Success get users',
           data: users,
