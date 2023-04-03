@@ -1,10 +1,10 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { RAPI } from '@/interfaces';
 import User from '@/models/User.model';
 import bcrypt from 'bcrypt';
 import authentication from '@/models/authentication';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import Token from '@/models/Token.model';
+import Role from '@/models/Role.model';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<RAPI>) {
   try {
@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       return res.status(400).json({ status: 'error', message: 'Email and password are required' });
     }
 
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email }, include: [Role] });
 
     if (!user) {
       return res.status(400).json({ status: 'error', message: 'Invalid credentials' });
@@ -39,9 +39,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       UserId: user.id,
     });
 
-    res.status(200).json({ status: 'success', message: 'Login success', data: { token } });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ status: 'error', message: 'Unable to connect to the database:', error });
+    const data = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      address: user.address,
+      Role: user.Role,
+      token,
+    };
+
+    res.status(200).json({ status: 'success', message: 'Login success', data });
+  } catch (error: any) {
+    res.status(500).json({ status: 'error', message: error?.message || 'Something went wrong', error });
   }
 }

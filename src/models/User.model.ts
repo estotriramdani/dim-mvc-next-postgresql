@@ -2,11 +2,12 @@ import { Model, DataTypes } from 'sequelize';
 import sequelize from '.';
 import Role from './Role.model';
 
-interface UserAttributes {
+export interface UserAttributes {
   id?: number;
   email: string;
   password: string;
   name: string;
+  address?: string;
   RoleId: number;
   Role?: Role;
   createdAt?: Date;
@@ -18,8 +19,9 @@ export default class User extends Model<UserAttributes> {
   public email!: string;
   public password!: string;
   public name!: string;
+  public address!: string;
   public RoleId!: number;
-  public role!: Role;
+  public Role!: Role;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -41,6 +43,10 @@ User.init(
     },
     name: {
       type: DataTypes.STRING(128),
+      allowNull: true,
+    },
+    address: {
+      type: DataTypes.STRING(256),
       allowNull: true,
     },
     RoleId: {

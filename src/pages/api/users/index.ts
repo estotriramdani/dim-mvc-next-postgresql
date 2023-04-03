@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import bcrypt from 'bcrypt';
 import { RAPI } from '@/interfaces';
 import Role from '@/models/Role.model';
 import User from '@/models/User.model';
@@ -9,6 +8,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   try {
     if (req.method === 'GET') {
       await authentication();
+      if (req.query?.email) {
+        const users = await User.findOne({
+          include: [Role],
+          where: {
+            email: req.query?.email,
+          },
+        });
+        res.status(200).json({
+          status: 'success',
+          message: 'Success get users',
+          data: users,
+        });
+      }
       const users = await User.findAll({
         include: [Role],
       });
@@ -20,8 +32,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     } else {
       return res.status(400).json({ status: 'error', message: 'Method not allowed' });
     }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ status: 'error', message: 'Unable to connect to the database:', error });
+  } catch (error: any) {
+    res
+      .status(500)
+      .json({ status: 'error', message: error?.message || 'Something went wrong', error });
   }
 }

@@ -1,0 +1,1 @@
+export const COOKIE_NAME = 'qid_12ghb3b23';

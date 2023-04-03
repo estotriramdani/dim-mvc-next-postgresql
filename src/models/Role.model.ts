@@ -1,9 +1,10 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '.';
 
-interface RoleAttributes {
+export interface RoleAttributes {
   id: number;
   name: string;
+  note?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -11,6 +12,7 @@ interface RoleAttributes {
 export default class Role extends Model<RoleAttributes> {
   public id!: number;
   public name!: string;
+  public note?: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -25,6 +27,10 @@ Role.init(
     name: {
       type: DataTypes.STRING(128),
       allowNull: false,
+    },
+    note: {
+      type: DataTypes.STRING(128),
+      allowNull: true,
     },
   },
   {

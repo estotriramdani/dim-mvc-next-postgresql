@@ -9,8 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     await authentication();
     const roles = await Role.findAll();
     res.status(200).json({ status: 'success', message: 'Get all roles', data: roles });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ status: 'error', message: 'Unable to connect to the database:', error });
+  } catch (error: any) {
+    res.status(500).json({ status: 'error', message: error?.message || 'Something went wrong', error });
   }
 }

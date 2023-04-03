@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { RAPI } from '@/interfaces';
 import User from '@/models/User.model';
 import bcrypt from 'bcrypt';
@@ -11,12 +10,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       return res.status(400).json({ status: 'error', message: 'Method not allowed' });
     }
     await authentication();
-    const { name, email, password, RoleId, roleId } = req.body;
+    const { name, email, password, RoleId, roleId, address } = req.body;
+
+    const checkUser = await User.findOne({ where: { email } });
+
+    if (checkUser) {
+      return res.status(400).json({ status: 'error', message: 'Email already registered' });
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
     const user = await User.create({
       name,
       email,
+      address,
       password: hashPassword,
       RoleId: RoleId || roleId,
     });
@@ -25,8 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       message: 'Success register user',
       data: user,
     });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ status: 'error', message: 'Unable to connect to the database:', error });
+  } catch (error: any) {
+    res.status(500).json({ status: 'error', message: error?.message || 'Something went wrong', error });
   }
 }
