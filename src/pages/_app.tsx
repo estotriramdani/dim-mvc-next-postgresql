@@ -16,7 +16,7 @@ export default function App({ Component, pageProps }: AppProps) {
           rel="noreferrer"
           className="link-hover"
         >
-          🧑‍💻 Esto Triramdani N
+          🧑‍💻 TK3
         </a>
       </div>
       <Component {...pageProps} />

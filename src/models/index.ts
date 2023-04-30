@@ -4,18 +4,22 @@ import pg from 'pg';
 const sequelize = new Sequelize({
   dialect: 'postgres',
   host: process.env.PGHOST,
+  logging: false,
   port: 5432,
   database: process.env.PGDATABASE,
   username: process.env.PGUSER,
   password: process.env.PGPASSWORD,
-  ssl: true,
+  ssl: process.env.IS_DEV === 'TRUE' ? false : true,
   dialectModule: pg,
-  dialectOptions: {
-    encrypt: true,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  },
+  dialectOptions:
+    process.env.IS_DEV === 'TRUE'
+      ? {}
+      : {
+          encrypt: true,
+          ssl: {
+            rejectUnauthorized: false,
+          },
+        },
 });
 
 export default sequelize;

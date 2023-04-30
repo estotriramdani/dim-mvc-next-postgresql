@@ -6,8 +6,8 @@ import authentication from '@/models/authentication';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<RAPI>) {
   try {
+    await authentication();
     if (req.method === 'GET') {
-      await authentication();
       if (req.query?.email) {
         const users = await User.findOne({
           include: [Role],
@@ -28,6 +28,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         status: 'success',
         message: 'Success get users',
         data: users,
+      });
+    } else if (req.method === 'PUT') {
+      const { name, email, address, RoleId, roleId, id } = req.body;
+      const user = await User.findOne({ where: { id } });
+      if (!user) {
+        return res.status(400).json({ status: 'error', message: 'User not found' });
+      }
+      await user.update({
+        name,
+        email,
+        address,
+        RoleId: RoleId || roleId,
+      });
+      res.status(200).json({
+        status: 'success',
+        message: 'Success update user',
+        data: user,
+      });
+    } else if (req.method === 'DELETE') {
+      const { id } = req.body;
+      const user = await User.findOne({ where: { id } });
+      if (!user) {
+        return res.status(400).json({ status: 'error', message: 'User not found' });
+      }
+      await user.destroy();
+      res.status(200).json({
+        status: 'success',
+        message: 'Success delete user',
+        data: user,
       });
     } else {
       return res.status(400).json({ status: 'error', message: 'Method not allowed' });

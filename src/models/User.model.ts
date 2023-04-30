@@ -56,6 +56,6 @@ User.init(
   },
   {
     tableName: 'users',
-    sequelize: sequelize, // instance of Sequelize
+    sequelize: sequelize,
   }
 );
